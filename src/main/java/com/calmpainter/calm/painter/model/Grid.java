@@ -1,5 +1,7 @@
 package com.calmpainter.calm.painter.model;
 
+import org.springframework.data.annotation.PersistenceCreator;
+
 public class Grid {
 
     public static final int SIZE = 15;
@@ -7,6 +9,11 @@ public class Grid {
 
     public Grid() {
         this.cells = new Color[SIZE][SIZE];
+    }
+
+    @PersistenceCreator 
+    public Grid(Color[][] cells) {
+        this.cells = cells;
     }
 
     public void paintCell(int row, int column, Color color) {
@@ -21,5 +28,9 @@ public class Grid {
             throw new IllegalArgumentException("Invalid cell coordinates");
         }
         return cells[row][column];
+    }
+
+    public Color[][] getCells() {
+        return cells;
     }
 }
