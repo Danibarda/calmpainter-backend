@@ -2,10 +2,14 @@ package com.calmpainter.calm.painter.service;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.calmpainter.calm.painter.model.Color;
 import com.calmpainter.calm.painter.model.Game;
+import com.calmpainter.calm.painter.model.GameState;
+import com.calmpainter.calm.painter.model.Player;
 import com.calmpainter.calm.painter.model.TargetPainting;
 import com.calmpainter.calm.painter.repository.GameRepository;
 import com.calmpainter.calm.painter.repository.TargetPaintingRepository;
@@ -33,5 +37,39 @@ public class GameService {
     public Game getGame(String gameId) {
         return gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found!"));
     }
+
+    public Game addPlayer(String gameId, String playerName) {
+
+        Game game = getGame(gameId);
+
+        if (game.getState() != GameState.WAITING) {
+            throw new RuntimeException("Game has already started!");
+        }
+
+        if (game.getPlayers().size() == 4) {
+            throw new RuntimeException("Game is full!");
+        }
+
+        Color playerColor = null;
+
+        for(Color color: Color.values()) {
+            boolean used = false;
+            for (Player player: game.getPlayers()) {
+                if(player.getColor() == color) {
+                    used = true;
+                    break;
+                }
+            }
+            
+            if(!used) {
+                playerColor = color;
+                break;
+            }
+        }
+        Player player = new Player(UUID.randomUUID().toString(),playerName, playerColor);
+        game.getPlayers().add(player);
+        return gameRepository.save(game);
+    }
+
 
 }
