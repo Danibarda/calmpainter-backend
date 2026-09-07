@@ -39,4 +39,8 @@ public class GameController {
         return gameService.startGame(gameId);
     }
     
+    @PostMapping("/{gameId}/paint")
+    public Game paint(@PathVariable String gameId, @RequestParam String playerId, @RequestParam int row, @RequestParam int column) {
+        return gameService.paint(gameId, playerId, row, column);
+    }
 }
