@@ -71,5 +71,20 @@ public class GameService {
         return gameRepository.save(game);
     }
 
+    public Game startGame(String gameId) {
+        
+        Game game = getGame(gameId);
+
+        if (game.getState() != GameState.WAITING) {
+            throw new RuntimeException("Game has already started!");
+        }
+
+        if (game.getPlayers().size() != 4) {
+            throw new RuntimeException("There has to be 4 players for the game to start!");
+        }
+        game.setState(GameState.PICTUREVIEW);
+        return gameRepository.save(game);
+    }
+
 
 }

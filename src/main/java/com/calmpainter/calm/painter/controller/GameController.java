@@ -33,5 +33,10 @@ public class GameController {
     public Game addPlayer(@PathVariable String gameId, @RequestParam String playerName) {
         return gameService.addPlayer(gameId, playerName);
     }
+
+    @PostMapping("/{gameId}/start")
+    public Game startGame(@PathVariable String gameId) {
+        return gameService.startGame(gameId);
+    }
     
 }
