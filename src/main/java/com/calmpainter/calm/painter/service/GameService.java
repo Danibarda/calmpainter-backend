@@ -5,6 +5,9 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.calmpainter.calm.painter.model.Color;
 import com.calmpainter.calm.painter.model.Game;
@@ -83,6 +86,32 @@ public class GameService {
             throw new RuntimeException("There has to be 4 players for the game to start!");
         }
         game.setState(GameState.PICTUREVIEW);
+        return gameRepository.save(game);
+    }
+    
+    public Game paint(String gameId, String playerId, int row, int column) {
+        
+        Game game = getGame(gameId);
+
+        if (game.getState() != GameState.PLAYING) {
+            throw new RuntimeException("Game is not being played!");
+        }
+
+        Player player = null;
+
+        for (Player p : game.getPlayers()) {
+
+            if (p.getId().equals(playerId)) {
+                player = p;
+                break;
+            }
+        }
+
+        if (player == null) {
+            throw new RuntimeException("Player does not belong to this game!");
+        }
+
+        game.getGrid().paintCell(row, column, player.getColor());
         return gameRepository.save(game);
     }
 
