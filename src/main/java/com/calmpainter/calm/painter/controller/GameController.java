@@ -43,4 +43,9 @@ public class GameController {
     public Game paint(@PathVariable String gameId, @RequestParam String playerId, @RequestParam int row, @RequestParam int column) {
         return gameService.paint(gameId, playerId, row, column);
     }
+    
+    @GetMapping("/{gameId}/score")
+    public int calculateScore(@PathVariable String gameId) {
+        return gameService.calculateScore(gameId);
+    }
 }

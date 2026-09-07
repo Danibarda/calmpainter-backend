@@ -5,13 +5,10 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.calmpainter.calm.painter.model.Color;
 import com.calmpainter.calm.painter.model.Game;
 import com.calmpainter.calm.painter.model.GameState;
+import com.calmpainter.calm.painter.model.Grid;
 import com.calmpainter.calm.painter.model.Player;
 import com.calmpainter.calm.painter.model.TargetPainting;
 import com.calmpainter.calm.painter.repository.GameRepository;
@@ -113,6 +110,31 @@ public class GameService {
 
         game.getGrid().paintCell(row, column, player.getColor());
         return gameRepository.save(game);
+    }
+
+     public int calculateScore(String gameId) {
+
+        Game game = getGame(gameId);
+
+        Grid targetGrid = game.getTargetPainting().getGrid();
+        Grid paintedGrid = game.getGrid();
+
+        int correctCells = 0;
+
+        for (int row = 0; row < Grid.SIZE; row++) {
+
+            for (int column = 0; column < Grid.SIZE; column++) {
+
+                Color targetColor = targetGrid.getCell(row, column);
+                Color paintedColor = paintedGrid.getCell(row, column);
+
+                if (targetColor == paintedColor) {
+                    correctCells++;
+                }
+            }
+        }
+
+        return correctCells;
     }
 
 
