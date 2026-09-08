@@ -8,11 +8,13 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import com.calmpainter.calm.painter.model.Color;
 import com.calmpainter.calm.painter.model.Game;
+import com.calmpainter.calm.painter.model.GameResult;
 import com.calmpainter.calm.painter.model.GameState;
 import com.calmpainter.calm.painter.model.Grid;
 import com.calmpainter.calm.painter.model.Player;
 import com.calmpainter.calm.painter.model.TargetPainting;
 import com.calmpainter.calm.painter.repository.GameRepository;
+import com.calmpainter.calm.painter.repository.GameResultRepository;
 import com.calmpainter.calm.painter.repository.TargetPaintingRepository;
 
 @Service
@@ -21,11 +23,14 @@ public class GameService {
     private final GameRepository gameRepository;
     private final TargetPaintingRepository targetPaintingRepository;
     private final TaskScheduler taskScheduler;
+    private final GameResultRepository gameResultRepository;
 
-    public GameService(GameRepository gameRepository, TargetPaintingRepository targetPaintingRepository, TaskScheduler taskScheduler) {
+
+    public GameService(GameRepository gameRepository, TargetPaintingRepository targetPaintingRepository, TaskScheduler taskScheduler, GameResultRepository gameResultRepository) {
         this.gameRepository = gameRepository;
         this.targetPaintingRepository = targetPaintingRepository;
         this.taskScheduler = taskScheduler;
+        this.gameResultRepository = gameResultRepository;
     }
 
     public Game createGame() {
@@ -98,7 +103,7 @@ public class GameService {
         }
 
         game.setState(GameState.PLAYING);
-
+        game.setPlayingStartedAt(System.currentTimeMillis());
         gameRepository.save(game);
 
         taskScheduler.schedule(() -> finishGame(gameId), new java.util.Date(System.currentTimeMillis() + 60000));
@@ -109,10 +114,14 @@ public class GameService {
         Game game = getGame(gameId);
 
         if (game.getState() != GameState.PLAYING) {
-            throw new RuntimeException("Game is not being played!");
+            return game;
         }
-
         game.setState(GameState.FINISHED);
+
+        double score = calculateScore(gameId);
+        long time = (System.currentTimeMillis() - game.getPlayingStartedAt()) / 1000;
+        GameResult result = new GameResult(game.getGrid(), score, time);
+        gameResultRepository.save(result);
 
         return gameRepository.save(game);
     }
@@ -143,7 +152,7 @@ public class GameService {
         return gameRepository.save(game);
     }
 
-     public int calculateScore(String gameId) {
+    public double calculateScore(String gameId) {
 
         Game game = getGame(gameId);
 
@@ -156,16 +165,13 @@ public class GameService {
 
             for (int column = 0; column < Grid.SIZE; column++) {
 
-                Color targetColor = targetGrid.getCell(row, column);
-                Color paintedColor = paintedGrid.getCell(row, column);
-
-                if (targetColor == paintedColor) {
+                if (targetGrid.getCell(row, column) == paintedGrid.getCell(row, column)) {
                     correctCells++;
                 }
             }
         }
 
-        return correctCells;
+        return (correctCells * 100.0) / (Grid.SIZE*Grid.SIZE);
     }
 
 
