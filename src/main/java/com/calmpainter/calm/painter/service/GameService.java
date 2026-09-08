@@ -55,52 +55,66 @@ public class GameService {
 
         Color playerColor = null;
 
-        for(Color color: Color.values()) {
+        for (Color color : Color.values()) {
             boolean used = false;
-            for (Player player: game.getPlayers()) {
-                if(player.getColor() == color) {
+            for (Player player : game.getPlayers()) {
+                if (player.getColor() == color) {
                     used = true;
                     break;
                 }
             }
-            
-            if(!used) {
+
+            if (!used) {
                 playerColor = color;
                 break;
             }
         }
-        Player player = new Player(UUID.randomUUID().toString(),playerName, playerColor);
+        Player player = new Player(UUID.randomUUID().toString(), playerName, playerColor);
         game.getPlayers().add(player);
-        return gameRepository.save(game);
+        gameRepository.save(game);
+        
+        if (game.getPlayers().size() == 4) {
+            game = startPictureView(gameId);
+        }
+        return game;
     }
 
-    public Game startGame(String gameId) {
-        
+    private Game startPictureView(String gameId) {
         Game game = getGame(gameId);
-
-        if (game.getState() != GameState.WAITING) {
-            throw new RuntimeException("Game has already started!");
-        }
-
-        if (game.getPlayers().size() != 4) {
-            throw new RuntimeException("There has to be 4 players for the game to start!");
-        }
         game.setState(GameState.PICTUREVIEW);
-        gameRepository.save(game);
-        taskScheduler.schedule(()-> startPlaying(gameId), new java.util.Date(System.currentTimeMillis()+10000));
+        game = gameRepository.save(game);
+
+        taskScheduler.schedule(() -> startPlaying(gameId), new java.util.Date(System.currentTimeMillis() + 10000));
+
         return game;
     }
 
     private void startPlaying(String gameId) {
         
         Game game = getGame(gameId);
-
+        
         if (game.getState() != GameState.PICTUREVIEW) {
             return;
         }
 
         game.setState(GameState.PLAYING);
+
         gameRepository.save(game);
+
+        taskScheduler.schedule(() -> finishGame(gameId), new java.util.Date(System.currentTimeMillis() + 60000));
+    }
+
+    public Game finishGame(String gameId) {
+
+        Game game = getGame(gameId);
+
+        if (game.getState() != GameState.PLAYING) {
+            throw new RuntimeException("Game is not being played!");
+        }
+
+        game.setState(GameState.FINISHED);
+
+        return gameRepository.save(game);
     }
     
     public Game paint(String gameId, String playerId, int row, int column) {
