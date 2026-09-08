@@ -117,13 +117,14 @@ public class GameService {
             return game;
         }
         game.setState(GameState.FINISHED);
+        gameRepository.save(game);
 
         double score = calculateScore(gameId);
         long time = (System.currentTimeMillis() - game.getPlayingStartedAt()) / 1000;
         GameResult result = new GameResult(game.getGrid(), score, time);
         gameResultRepository.save(result);
 
-        return gameRepository.save(game);
+        return game;
     }
     
     public Game paint(String gameId, String playerId, int row, int column) {
