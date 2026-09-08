@@ -33,11 +33,6 @@ public class GameController {
     public Game addPlayer(@PathVariable String gameId, @RequestParam String playerName) {
         return gameService.addPlayer(gameId, playerName);
     }
-
-    @PostMapping("/{gameId}/start")
-    public Game startGame(@PathVariable String gameId) {
-        return gameService.startGame(gameId);
-    }
     
     @PostMapping("/{gameId}/paint")
     public Game paint(@PathVariable String gameId, @RequestParam String playerId, @RequestParam int row, @RequestParam int column) {
@@ -47,5 +42,10 @@ public class GameController {
     @GetMapping("/{gameId}/score")
     public int calculateScore(@PathVariable String gameId) {
         return gameService.calculateScore(gameId);
+    }
+
+    @PostMapping("/{gameId}/done")
+    public Game finishGame(@PathVariable String gameId) {
+        return gameService.finishGame(gameId);
     }
 }
