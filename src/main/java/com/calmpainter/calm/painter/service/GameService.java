@@ -175,5 +175,8 @@ public class GameService {
         return (correctCells * 100.0) / (Grid.SIZE*Grid.SIZE);
     }
 
+    public List<GameResult> getLeaderboard() {
+        return gameResultRepository.findAllByOrderByScoreDescTimeAsc();
+    }
 
 }
