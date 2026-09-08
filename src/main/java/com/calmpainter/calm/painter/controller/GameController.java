@@ -40,7 +40,7 @@ public class GameController {
     }
     
     @GetMapping("/{gameId}/score")
-    public int calculateScore(@PathVariable String gameId) {
+    public double calculateScore(@PathVariable String gameId) {
         return gameService.calculateScore(gameId);
     }
 
