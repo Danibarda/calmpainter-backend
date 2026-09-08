@@ -15,6 +15,8 @@ public class Game {
     private GameState state;
     private Grid grid;
     private TargetPainting targetPainting;
+    private long playingStartedAt;
+
 
     public Game() {
         this.players = new ArrayList<>();
@@ -60,6 +62,14 @@ public class Game {
 
     public void setTargetPainting(TargetPainting targetPainting) {
         this.targetPainting = targetPainting;
+    }
+
+    public long getPlayingStartedAt() {
+        return playingStartedAt;
+    }
+
+    public void setPlayingStartedAt(long playingStartedAt) {
+        this.playingStartedAt = playingStartedAt;
     }
     
     
