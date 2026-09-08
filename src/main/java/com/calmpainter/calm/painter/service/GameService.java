@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import com.calmpainter.calm.painter.model.Color;
 import com.calmpainter.calm.painter.model.Game;
@@ -19,10 +20,12 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final TargetPaintingRepository targetPaintingRepository;
+    private final TaskScheduler taskScheduler;
 
-    public GameService(GameRepository gameRepository, TargetPaintingRepository targetPaintingRepository) {
+    public GameService(GameRepository gameRepository, TargetPaintingRepository targetPaintingRepository, TaskScheduler taskScheduler) {
         this.gameRepository = gameRepository;
         this.targetPaintingRepository = targetPaintingRepository;
+        this.taskScheduler = taskScheduler;
     }
 
     public Game createGame() {
@@ -83,7 +86,21 @@ public class GameService {
             throw new RuntimeException("There has to be 4 players for the game to start!");
         }
         game.setState(GameState.PICTUREVIEW);
-        return gameRepository.save(game);
+        gameRepository.save(game);
+        taskScheduler.schedule(()-> startPlaying(gameId), new java.util.Date(System.currentTimeMillis()+10000));
+        return game;
+    }
+
+    private void startPlaying(String gameId) {
+        
+        Game game = getGame(gameId);
+
+        if (game.getState() != GameState.PICTUREVIEW) {
+            return;
+        }
+
+        game.setState(GameState.PLAYING);
+        gameRepository.save(game);
     }
     
     public Game paint(String gameId, String playerId, int row, int column) {
