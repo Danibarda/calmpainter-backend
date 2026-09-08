@@ -1,5 +1,7 @@
 package com.calmpainter.calm.painter.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.calmpainter.calm.painter.model.Game;
+import com.calmpainter.calm.painter.model.GameResult;
 import com.calmpainter.calm.painter.service.GameService;
 
 @RestController
 @RequestMapping("/games")
 public class GameController {
     private final GameService gameService;
+    
 
     public GameController(GameService gameService) {
         this.gameService = gameService;
@@ -47,5 +51,10 @@ public class GameController {
     @PostMapping("/{gameId}/done")
     public Game finishGame(@PathVariable String gameId) {
         return gameService.finishGame(gameId);
+    }
+
+    @GetMapping("/leaderboard")
+    public List<GameResult> getLeaderBoard() {
+        return gameService.getLeaderboard();
     }
 }
