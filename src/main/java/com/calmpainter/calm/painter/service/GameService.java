@@ -109,12 +109,12 @@ public class GameService {
         taskScheduler.schedule(() -> finishGame(gameId), new java.util.Date(System.currentTimeMillis() + 60000));
     }
 
-    public Game finishGame(String gameId) {
+    public GameResult finishGame(String gameId) {
 
         Game game = getGame(gameId);
 
         if (game.getState() != GameState.PLAYING) {
-            return game;
+            return null;
         }
         game.setState(GameState.FINISHED);
         gameRepository.save(game);
@@ -122,9 +122,9 @@ public class GameService {
         double score = calculateScore(gameId);
         long time = (System.currentTimeMillis() - game.getPlayingStartedAt()) / 1000;
         GameResult result = new GameResult(game.getGrid(), score, time);
-        gameResultRepository.save(result);
+        result = gameResultRepository.save(result);
 
-        return game;
+        return result;
     }
     
     public Game paint(String gameId, String playerId, int row, int column) {
