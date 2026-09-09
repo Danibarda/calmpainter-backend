@@ -40,7 +40,7 @@ public class GameService {
     }
     
     private void broadcast(Game game){
-        messagingTemplate.convertAndSend("topic/games/" + game.getId(), game);
+        messagingTemplate.convertAndSend("/topic/games/" + game.getId(), game);
     }
 
     public Game createGame() {
