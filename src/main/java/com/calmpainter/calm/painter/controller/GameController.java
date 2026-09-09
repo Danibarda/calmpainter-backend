@@ -49,7 +49,7 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/done")
-    public Game finishGame(@PathVariable String gameId) {
+    public GameResult finishGame(@PathVariable String gameId) {
         return gameService.finishGame(gameId);
     }
 
