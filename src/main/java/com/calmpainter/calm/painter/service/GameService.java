@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import com.calmpainter.calm.painter.model.Color;
@@ -17,6 +18,9 @@ import com.calmpainter.calm.painter.repository.GameRepository;
 import com.calmpainter.calm.painter.repository.GameResultRepository;
 import com.calmpainter.calm.painter.repository.TargetPaintingRepository;
 
+// for SimpleMessagingTemplate and convertAndSend the following article is used
+// https://www.baeldung.com/spring-boot-scheduled-websocket
+
 @Service
 public class GameService {
 
@@ -24,13 +28,19 @@ public class GameService {
     private final TargetPaintingRepository targetPaintingRepository;
     private final TaskScheduler taskScheduler;
     private final GameResultRepository gameResultRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
 
-    public GameService(GameRepository gameRepository, TargetPaintingRepository targetPaintingRepository, TaskScheduler taskScheduler, GameResultRepository gameResultRepository) {
+    public GameService(GameRepository gameRepository, TargetPaintingRepository targetPaintingRepository, TaskScheduler taskScheduler, GameResultRepository gameResultRepository, SimpMessagingTemplate messagingTemplate) {
         this.gameRepository = gameRepository;
         this.targetPaintingRepository = targetPaintingRepository;
         this.taskScheduler = taskScheduler;
         this.gameResultRepository = gameResultRepository;
+        this.messagingTemplate = messagingTemplate;
+    }
+    
+    private void broadcast(Game game){
+        messagingTemplate.convertAndSend("topic/games/" + game.getId(), game);
     }
 
     public Game createGame() {
@@ -76,7 +86,8 @@ public class GameService {
         }
         Player player = new Player(UUID.randomUUID().toString(), playerName, playerColor);
         game.getPlayers().add(player);
-        gameRepository.save(game);
+        game = gameRepository.save(game);
+        broadcast(game);
         
         if (game.getPlayers().size() == 4) {
             game = startPictureView(gameId);
@@ -88,6 +99,7 @@ public class GameService {
         Game game = getGame(gameId);
         game.setState(GameState.PICTUREVIEW);
         game = gameRepository.save(game);
+        broadcast(game);
 
         taskScheduler.schedule(() -> startPlaying(gameId), new java.util.Date(System.currentTimeMillis() + 10000));
 
@@ -104,7 +116,8 @@ public class GameService {
 
         game.setState(GameState.PLAYING);
         game.setPlayingStartedAt(System.currentTimeMillis());
-        gameRepository.save(game);
+        game = gameRepository.save(game);
+        broadcast(game);
 
         taskScheduler.schedule(() -> finishGame(gameId), new java.util.Date(System.currentTimeMillis() + 60000));
     }
@@ -117,7 +130,8 @@ public class GameService {
             return null;
         }
         game.setState(GameState.FINISHED);
-        gameRepository.save(game);
+        game = gameRepository.save(game);
+        broadcast(game);
 
         double score = calculateScore(gameId);
         long time = (System.currentTimeMillis() - game.getPlayingStartedAt()) / 1000;
@@ -150,7 +164,9 @@ public class GameService {
         }
 
         game.getGrid().paintCell(row, column, player.getColor());
-        return gameRepository.save(game);
+        game = gameRepository.save(game);
+        broadcast(game);
+        return game;
     }
 
     public double calculateScore(String gameId) {
