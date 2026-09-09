@@ -195,4 +195,9 @@ public class GameService {
         return gameResultRepository.findAllByOrderByScoreDescTimeAsc();
     }
 
+    public Game getOrCreateGame() {
+        return gameRepository.findFirstByState(GameState.WAITING)
+        .orElseGet(this::createGame);
+    }
+
 }
