@@ -7,5 +7,5 @@ import com.calmpainter.calm.painter.model.Game;
 import com.calmpainter.calm.painter.model.GameState;
 
 public interface GameRepository extends MongoRepository<Game,String> {
-    Optional<Game> findByState(GameState state);
+    Optional<Game> findFirstByState(GameState state);
 }
