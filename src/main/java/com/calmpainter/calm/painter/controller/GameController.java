@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.calmpainter.calm.painter.model.Game;
 import com.calmpainter.calm.painter.model.GameResult;
+import com.calmpainter.calm.painter.model.Player;
 import com.calmpainter.calm.painter.service.GameService;
 
 @RestController
@@ -34,7 +35,7 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/players")
-    public Game addPlayer(@PathVariable String gameId, @RequestParam String playerName) {
+    public Player addPlayer(@PathVariable String gameId, @RequestParam String playerName) {
         return gameService.addPlayer(gameId, playerName);
     }
     
