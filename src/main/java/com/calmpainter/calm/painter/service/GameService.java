@@ -43,6 +43,10 @@ public class GameService {
         messagingTemplate.convertAndSend("/topic/games/" + game.getId(), game);
     }
 
+    private void broadcastResult(String gameId, GameResult result) {
+        messagingTemplate.convertAndSend("/topic/games/" + gameId + "/result", result);
+    }
+
     public Game createGame() {
 
         Game game = new Game();
@@ -137,7 +141,7 @@ public class GameService {
         long time = (System.currentTimeMillis() - game.getPlayingStartedAt()) / 1000;
         GameResult result = new GameResult(game.getGrid(), score, time);
         result = gameResultRepository.save(result);
-
+        broadcastResult(gameId, result);
         return result;
     }
     
