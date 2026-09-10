@@ -17,7 +17,6 @@ public class Game {
     private TargetPainting targetPainting;
     private long playingStartedAt;
 
-
     public Game() {
         this.players = new ArrayList<>();
         this.state = GameState.WAITING;
@@ -71,6 +70,5 @@ public class Game {
     public void setPlayingStartedAt(long playingStartedAt) {
         this.playingStartedAt = playingStartedAt;
     }
-    
     
 }
