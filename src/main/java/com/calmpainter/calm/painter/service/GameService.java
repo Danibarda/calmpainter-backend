@@ -60,7 +60,7 @@ public class GameService {
         return gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found!"));
     }
 
-    public Game addPlayer(String gameId, String playerName) {
+    public Player addPlayer(String gameId, String playerName) {
 
         Game game = getGame(gameId);
 
@@ -96,7 +96,7 @@ public class GameService {
         if (game.getPlayers().size() == 4) {
             game = startPictureView(gameId);
         }
-        return game;
+        return player;
     }
 
     private Game startPictureView(String gameId) {
