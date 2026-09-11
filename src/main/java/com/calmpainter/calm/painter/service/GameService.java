@@ -1,7 +1,10 @@
 package com.calmpainter.calm.painter.service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -43,6 +46,21 @@ public class GameService {
         messagingTemplate.convertAndSend("/topic/games/" + game.getId(), game);
     }
 
+    private List<Color> getUsedColors(Grid grid) {
+        Set<Color> usedColors = new LinkedHashSet<>();
+
+        for (int row = 0; row < Grid.SIZE; row++) {
+            for (int column = 0; column < Grid.SIZE; column++) {
+                Color color = grid.getCell(row, column);
+                if(color != null) {
+                    usedColors.add(color);
+                }
+            }
+        }
+
+        return new ArrayList<>(usedColors);
+    }
+
     private void broadcastResult(String gameId, GameResult result) {
         messagingTemplate.convertAndSend("/topic/games/" + gameId + "/result", result);
     }
@@ -72,22 +90,12 @@ public class GameService {
             throw new RuntimeException("Game is full!");
         }
 
-        Color playerColor = null;
+        List<Color> usedColors = getUsedColors(game.getTargetPainting().getGrid());
+        Color playerColor = usedColors.get(game.getPlayers().size() % usedColors.size());
 
-        for (Color color : Color.values()) {
-            boolean used = false;
-            for (Player player : game.getPlayers()) {
-                if (player.getColor() == color) {
-                    used = true;
-                    break;
-                }
-            }
+        
 
-            if (!used) {
-                playerColor = color;
-                break;
-            }
-        }
+
         Player player = new Player(UUID.randomUUID().toString(), playerName, playerColor);
         game.getPlayers().add(player);
         game = gameRepository.save(game);
