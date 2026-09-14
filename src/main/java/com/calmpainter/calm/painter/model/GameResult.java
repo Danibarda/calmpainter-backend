@@ -1,5 +1,7 @@
 package com.calmpainter.calm.painter.model;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,15 +12,17 @@ public class GameResult {
     private Grid picture;
     private double score;
     private long time;
+    private List<Player> players;
 
     
     public GameResult() {
     }
     
-    public GameResult(Grid picture, double score, long time) {
+    public GameResult(Grid picture, double score, long time, List<Player> players) {
         this.picture = picture;
         this.score = score;
         this.time = time;
+        this.players = players;
     }
 
     public String getId() {
@@ -44,6 +48,12 @@ public class GameResult {
     }
     public void setTime(long time) {
         this.time = time;
+    }
+    public List<Player> getPlayers() {
+        return players;
+    }
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
     
     
