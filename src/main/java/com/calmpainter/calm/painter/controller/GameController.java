@@ -59,7 +59,6 @@ public class GameController {
         return gameService.getLeaderboard();
     }
 
-    //add this
     @GetMapping("/current") 
     public Game getCurrentGame() {
         return gameService.getOrCreateGame();
