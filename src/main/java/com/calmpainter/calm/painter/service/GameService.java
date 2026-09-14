@@ -139,7 +139,7 @@ public class GameService {
 
         double score = calculateScore(gameId);
         long time = (System.currentTimeMillis() - game.getPlayingStartedAt()) / 1000;
-        GameResult result = new GameResult(game.getGrid(), score, time);
+        GameResult result = new GameResult(game.getGrid(), score, time, game.getPlayers());
         result = gameResultRepository.save(result);
         broadcastResult(gameId, result);
         return result;
