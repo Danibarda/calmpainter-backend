@@ -38,9 +38,9 @@ public class GameController {
         return gameService.createGame();
     }
 
-    @Size 
+    
     @PostMapping("/{gameId}/players")
-    public Player addPlayer(@PathVariable String gameId, @Size (min = 3, max = 8, message = "Player name has to be at least 2-8 characters!") @RequestParam String playerName) {
+    public Player addPlayer(@PathVariable String gameId, @Size (min = 3, max = 8, message = "Player name has to be at least 3-8 characters!") @RequestParam String playerName) {
         return gameService.addPlayer(gameId, playerName);
     }
     
