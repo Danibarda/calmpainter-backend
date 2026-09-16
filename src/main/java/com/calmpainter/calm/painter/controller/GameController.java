@@ -2,6 +2,7 @@ package com.calmpainter.calm.painter.controller;
 
 import java.util.List;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,10 @@ import com.calmpainter.calm.painter.model.GameResult;
 import com.calmpainter.calm.painter.model.Player;
 import com.calmpainter.calm.painter.service.GameService;
 
+import jakarta.validation.constraints.Size;
+
 @RestController
+@Validated 
 @RequestMapping("/games")
 public class GameController {
     private final GameService gameService;
@@ -34,8 +38,9 @@ public class GameController {
         return gameService.createGame();
     }
 
+    
     @PostMapping("/{gameId}/players")
-    public Player addPlayer(@PathVariable String gameId, @RequestParam String playerName) {
+    public Player addPlayer(@PathVariable String gameId, @Size (min = 3, max = 8, message = "Player name has to be at least 3-8 characters!") @RequestParam String playerName) {
         return gameService.addPlayer(gameId, playerName);
     }
     

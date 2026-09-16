@@ -3,7 +3,7 @@ package com.calmpainter.calm.painter.model;
 
 public class Player {
     private String id;
-    private String name;
+    private String name; 
     private Color color;
     
     public Player() {
