@@ -50,20 +50,6 @@ docker build -t calmpainter-backend .
 docker run -p 8080:8080 --env-file .env calmpainter-backend
 ```
 
-## API
-
-Base URL: `/games`
-
-| Method | Endpoint                  | Description                        |
-|--------|----------------------------|-------------------------------------|
-| GET    | `/games/{gameId}`          | Get a game                         |
-| POST   | `/games`                   | Create a new game                  |
-| POST   | `/games/{gameId}/players`  | Add a player                       |
-| POST   | `/games/{gameId}/paint`    | Paint a cell                       |
-| GET    | `/games/{gameId}/score`    | Get the score for a game           |
-| POST   | `/games/{gameId}/done`     | Finish the game and save the result|
-| GET    | `/games/leaderboard`       | Get the leaderboard                |
-| GET    | `/games/current`           | Get (or create) the current game   |
 
 ### WebSocket
 
